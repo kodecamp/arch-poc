@@ -1,12 +1,12 @@
 package com.walmart.commons.controller;
 
-import com.walmart.commons.service.BaseDto;
-import com.walmart.commons.service.FailureDto;
+import com.walmart.commons.dto.BaseDto;
+import com.walmart.commons.dto.FailureDto;
 import com.walmart.commons.service.ServiceResult;
-import com.walmart.commons.service.SuccessDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
+import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
@@ -14,58 +14,95 @@ import java.util.List;
 */
 public final class ResponseProcessor {
 
-	static public final <T> ResponseEntity<ResponseObj> ok(T obj) {
-		return ResponseEntity.ok(SuccessResponse.builder().responseValue(obj).build());
+	static public ResponseEntity ok(String key,Object obj) {
+		return ResponseEntity.ok(
+				SuccessResponse.instanceOf().add(key,obj));
 	}
 
-	static public final <T> ResponseEntity<ResponseObj> notFound(T obj) {
+	static public ResponseEntity notFound(Object obj) {
 		return ResponseEntity
 			.status(HttpStatus.NOT_FOUND)
-			.body(SuccessResponse.builder().responseValue(obj).build());
+			.body(SuccessResponse.instanceOf().add("error", obj));
 	}
 
-	static public final <T> ResponseEntity<ResponseObj> created(T obj) {
+	static public ResponseEntity created(String key,Object obj) {
 		return ResponseEntity
 			.status(HttpStatus.CREATED)
-			.body(SuccessResponse.builder().responseValue(obj).build());
+			.body(SuccessResponse.instanceOf().add(key,obj));
 	}
 
-	static public final <T> ResponseEntity<ResponseObj> noContent(T obj) {
+	static public <T> ResponseEntity noContent(T obj) {
 		return ResponseEntity
 			.status(HttpStatus.NO_CONTENT)
-			.body(SuccessResponse.builder().responseValue(obj).build());
+			.body(SuccessResponse.instanceOf().add("", ""));
 	}
 
-	static public final ResponseEntity<ResponseObj> serverError(ErrorResponse obj) {
+	static public ResponseEntity serverError(FailureDto obj) {
 		return ResponseEntity
 			.status(HttpStatus.INTERNAL_SERVER_ERROR)
 			.body(obj);
 	}
 
-	static public ResponseEntity<ResponseObj> process(final ServiceResult sr) {
+	static public ResponseEntity authenticationError(FailureDto obj) {
+		System.out.println("error object = " + obj);
+		return ResponseEntity
+				.status(HttpStatus.UNAUTHORIZED)
+				.body(obj);
+	}
 
-		final ResponseEntity<ResponseObj> response;
+	static public ResponseEntity badRequest(FailureDto obj) {
+		System.out.println("error object = " + obj);
+		return ResponseEntity
+				.status(HttpStatus.BAD_REQUEST)
+				.body(obj);
+	}
+
+	static public ResponseEntity badRequest(String errorCode, String optMessage) {
+		return ResponseEntity
+				.status(HttpStatus.BAD_REQUEST)
+				.body(FailureDto.from(errorCode, optMessage));
+	}
+
+	static public ResponseEntity process(String key,final ServiceResult sr) {
+
+		final ResponseEntity response;
 
 		switch(sr.getStatus()) {
+
 			case SUCCESS_SINGLE:
-				BaseDto dto = ((SuccessDto)sr.getResultObj()).getResultObj();
-				response = ResponseProcessor.ok(dto);
+				Object dto = sr.getResultObj();
+				response = ResponseProcessor.ok(key,dto);
 				break;
 
 			case SUCCESS_MULTIPLE:
-				List<BaseDto> listOfDto = ((SuccessDto)sr.getResultObj()).getResultList();
-				response = ResponseProcessor.ok(listOfDto);
+				List<Object> listOfDto = (List<Object>) sr.getResultObj();
+				response = ResponseProcessor.ok(key,listOfDto);
 				break;
 
 			case FAILURE:
 				FailureDto failureDto = ((FailureDto)sr.getResultObj());
-				response = ResponseProcessor.serverError(ErrorResponse.from(failureDto));
+				response = ResponseProcessor.serverError(failureDto);
 				break;
 
 			default:
 					throw new IllegalArgumentException("NO MATCHING CASE FOUND");
 		}
 		return response;
+	}
+
+	static public LinkedHashMap<String, Object> process(Pair...keyValues) {
+		LinkedHashMap<String, Object> result = new LinkedHashMap<>();
+
+		Arrays.stream(keyValues).forEach((keyValue) -> {
+
+			result.put(
+					keyValue.getKey(),
+					!keyValue.getServiceResult().isFailure()
+							?  keyValue.getServiceResult().getResultObj()
+					        : "");
+		});
+
+		return result;
 	}
 
 

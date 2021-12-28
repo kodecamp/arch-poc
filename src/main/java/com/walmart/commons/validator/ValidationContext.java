@@ -1,12 +1,12 @@
 package com.walmart.commons.validator;
 
-import com.walmart.commons.service.BaseDto;
+import com.walmart.commons.dto.BaseDto;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public final class ValidationContext {
-    private final List<Validator<BaseDto>> validators;
+    private final List<Validator> validators;
 
     private ValidationContext() {
         this.validators = new ArrayList<>();
@@ -16,7 +16,7 @@ public final class ValidationContext {
         return new ValidationContext();
     }
 
-    public ValidationContext andThen(Validator<BaseDto> validator) {
+    public ValidationContext andThen(Validator validator) {
         this.validators.add(validator);
         return this;
     }
@@ -25,7 +25,7 @@ public final class ValidationContext {
         System.out.println("baseDto = " + baseDto);
         ValidationResult vr = ValidationResult.success();
         System.out.println("---------> validators : " + this.validators);
-        for(Validator<BaseDto> validator : this.validators) {
+        for(Validator validator : this.validators) {
             vr = validator.validate(baseDto);
             if(!vr.isSuccess()) {
 

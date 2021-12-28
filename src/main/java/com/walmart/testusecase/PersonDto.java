@@ -1,8 +1,7 @@
 package com.walmart.testusecase;
 
-import com.walmart.commons.service.BaseDto;
+import com.walmart.commons.dto.BaseDto;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 
 /**

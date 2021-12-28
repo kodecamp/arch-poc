@@ -1,57 +1,62 @@
 package com.walmart.commons.service;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.walmart.commons.dto.BaseDto;
+import com.walmart.commons.dto.FailureDto;
 import com.walmart.commons.validator.ValidationResult;
 import lombok.Getter;
+
+import java.util.Collections;
 import java.util.List;
 
 @Getter
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ServiceResult {
     private Status status;
-    private BaseDto resultObj;
+    private Object resultObj;
 
     // private constructor
     private ServiceResult() {}
 
-    static public ServiceResult withSuccess(BaseDto resultObj) {
-        var serviceResult = new ServiceResult();
+    static public ServiceResult withSuccess(Object resultObj) {
+        ServiceResult serviceResult = new ServiceResult();
         serviceResult.status = Status.SUCCESS_SINGLE;
-        serviceResult.resultObj = SuccessDto.of(resultObj);
+        serviceResult.resultObj = resultObj;
         return serviceResult;
     }
 
-    static public ServiceResult withSuccess(List<BaseDto> resultList) {
-        var serviceResult = new ServiceResult();
+    static public ServiceResult withSuccess(List<Object> resultList) {
+        ServiceResult serviceResult = new ServiceResult();
         serviceResult.status = Status.SUCCESS_MULTIPLE;
-        serviceResult.resultObj = SuccessDto.of(resultList);
+        serviceResult.resultObj = resultList;
         return serviceResult;
     }
 
-    static public ServiceResult withFailure(String errorCode, String shortDes, String details) {
-        System.out.println("errorCode = " + errorCode + ", shortDes = " + shortDes + ", details = " + details);
-        var serviceResult = new ServiceResult();
+    static public ServiceResult withFailure(String errorCode) {
+        ServiceResult serviceResult = new ServiceResult();
         serviceResult.status = Status.FAILURE;
-        serviceResult.resultObj = FailureDto.from(errorCode,shortDes, details);
-        List<Integer> numbers = List.of(1, 2, 3);
-        System.out.println("numbers = " + numbers);
+        serviceResult.resultObj = FailureDto.from(errorCode);
         return serviceResult;
     }
 
     static public ServiceResult withFailure(FailureDto failureDto) {
-        var serviceResult = new ServiceResult();
+        ServiceResult serviceResult = new ServiceResult();
         serviceResult.status = Status.FAILURE;
         serviceResult.resultObj = failureDto;
         return serviceResult;
     }
 
-    static public ServiceResult withFailure(List<BaseDto> failures) {
-        var serviceResult = new ServiceResult();
+    static public ServiceResult withFailure(List<Object> failures) {
+        ServiceResult serviceResult = new ServiceResult();
         serviceResult.status = Status.FAILURE;
-        serviceResult.resultObj = (BaseDto) failures;
+        serviceResult.resultObj =  failures;
         return serviceResult;
     }
 
-    static public ServiceResult processValidationResult(ValidationResult vr, BaseDto baseDto) {
-       return vr.isSuccess() ? withSuccess(baseDto): withFailure(vr.error().get()) ;
+    static public ServiceResult processValidationResult(ValidationResult vr, Object baseDto) {
+       return vr.isSuccess()
+               ? withSuccess(baseDto)
+               : withFailure(vr.error().orElse(FailureDto.empty())) ;
     }
 
     public boolean isSuccessSingle() {
@@ -66,13 +71,14 @@ public class ServiceResult {
         return this.status.equals(Status.FAILURE);
     }
 
-    public static enum Status {
-        SUCCESS_SINGLE,SUCCESS_MULTIPLE, FAILURE;
+    public enum Status {
+        SUCCESS_SINGLE,SUCCESS_MULTIPLE, FAILURE
     }
 
     public static void main(String[] args) {
         ServiceResult.withSuccess(new BaseDto() {});
-        ServiceResult serviceResult2 = ServiceResult.withSuccess(List.of(new BaseDto() {}));
+        ServiceResult serviceResult2 = ServiceResult.withSuccess(Collections.singletonList(new BaseDto() {
+        }));
 
     }
 

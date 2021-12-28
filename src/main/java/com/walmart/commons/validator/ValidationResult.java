@@ -1,17 +1,14 @@
 package com.walmart.commons.validator;
 
-import com.walmart.commons.service.BaseDto;
-import com.walmart.commons.service.FailureDto;
-import com.walmart.testusecase.PersonDto;
+import com.walmart.commons.dto.FailureDto;
 
 import java.util.*;
-import java.util.function.Function;
 
 public class ValidationResult {
 
     private final List<FailureDto> validationErrors = new ArrayList<>();
     private final ValidationStatus status;
-    private List<Validator<BaseDto>> validators = new ArrayList<>();
+    private final List<Validator> validators = new ArrayList<>();
 
     private ValidationResult(List<FailureDto> errors) {
         this.validationErrors.addAll(errors);
@@ -57,11 +54,8 @@ public class ValidationResult {
         return this.status.equals(ValidationStatus.VALIDATION_SUCCESS);
     }
 
-    public ValidationResult andThen(Validator<BaseDto> validator) {
+    public ValidationResult andThen(Validator validator) {
         this.validators.add(validator);
         return this;
     }
-
-
-
 }

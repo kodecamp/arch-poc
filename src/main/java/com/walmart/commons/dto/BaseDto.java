@@ -1,4 +1,4 @@
-package com.walmart.commons.service;
+package com.walmart.commons.dto;
 
 /**
 * BaseDto

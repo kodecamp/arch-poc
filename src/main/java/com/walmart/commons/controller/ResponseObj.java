@@ -1,4 +1,7 @@
 package com.walmart.commons.controller;
 
-public interface ResponseObj {
+
+import java.util.LinkedHashMap;
+
+public class ResponseObj extends LinkedHashMap {
 }

@@ -1,10 +1,12 @@
-package com.walmart.commons.service;
+package com.walmart.commons.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 
 import java.util.List;
 
 @Getter
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class SuccessDto implements BaseDto {
     private BaseDto resultObj;
     private List<BaseDto> resultList;
@@ -13,13 +15,13 @@ public class SuccessDto implements BaseDto {
     private SuccessDto() {
     }
 
-    static public SuccessDto of(final BaseDto resultObj) {
+    static public BaseDto of(final BaseDto resultObj) {
         final SuccessDto successDto = new SuccessDto();
         successDto.resultObj = resultObj;
         return successDto;
     }
 
-    static public SuccessDto of(final List<BaseDto> resultList) {
+    static public BaseDto of(final List<BaseDto> resultList) {
         final SuccessDto successDto = new SuccessDto();
         successDto.resultList = resultList;
         return successDto;

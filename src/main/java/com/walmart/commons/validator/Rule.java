@@ -26,17 +26,17 @@ public class Rule<T> {
         return this.codeOtherwise;
     }
 
-    static public <T> Rule<T> from(Supplier<Boolean> cond, Supplier<T> code, Supplier<T> codeOtherwise) {
-       return new Rule<T>(cond, code, codeOtherwise);
+    static public <T> Rule<T> is(Supplier<Boolean> cond, Supplier<T> code, Supplier<T> codeOtherwise) {
+       return new Rule<>(cond, code, codeOtherwise);
     }
 
-    static public <T> Rule<T> from(Supplier<Boolean> cond, Supplier<T> code) {
-        return new Rule<T>(cond, code, null);
+    static public <T> Rule<T> is(Supplier<Boolean> cond, Supplier<T> code) {
+        return new Rule<>(cond, code, null);
     }
 
 
 
-    static public <T> Context<T> ctx() {
+    static public Context ctx() {
         return new Context<>();
     }
 
@@ -59,7 +59,7 @@ public class Rule<T> {
             this(null, null, null);
         }
 
-        public Context ifTrue(Supplier<Boolean> cond) {
+        public Context when(Supplier<Boolean> cond) {
             this.cond = cond;
             return this;
         }
@@ -69,8 +69,8 @@ public class Rule<T> {
             return this;
         }
 
-        public Context otherwise(Supplier<T> block) {
-            this.alternateBlock = block;
+        public Context otherwise(Supplier<T> alternateBlock) {
+            this.alternateBlock = alternateBlock;
             return this;
         }
 
