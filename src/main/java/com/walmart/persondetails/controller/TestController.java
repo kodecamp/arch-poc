@@ -1,12 +1,12 @@
-package com.walmart.testusecase.controller;
+package com.walmart.persondetails.controller;
 
 import com.walmart.commons.controller.*;
 import com.walmart.commons.dto.BaseDto;
-import com.walmart.commons.dto.FailureDto;
+import com.walmart.commons.dto.ErrorDto;
 import com.walmart.commons.service.PersonService;
-import com.walmart.commons.service.ServiceResult;
-import com.walmart.testusecase.PersonDto;
-import com.walmart.testusecase.dto.TestDto;
+import com.walmart.commons.service.ServiceResponse;
+import com.walmart.persondetails.PersonDto;
+import com.walmart.persondetails.dto.TestDto;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -25,25 +25,27 @@ public class TestController {
 	@GetMapping("")
 //	@EnableAuthentication
 	public ResponseEntity getAllPerson() {
-		final ServiceResult sr = service.getPeople();
+		final ServiceResponse sr = service.getPeople();
 //		throw AppException.from("500", new Exception() );
 //		return ResponseProcessor.process("all", sr);
-		return ResponseProcessor.badRequest(FailureDto.from("500", "100")
+		return ResponseProcessor.badRequest(
+				ErrorDto.from("500", "100")
 		);
+//		ResponseObj responseObj = ResponseObj.
 	}
 
 	@GetMapping("/{id}")
 	@EnableAuthentication
 	public ResponseEntity getPersonBy(
 			final @PathVariable(required = true) String id) {
-		final ServiceResult sr = service.getPersonById(id);
+		final ServiceResponse sr = service.getPersonById(id);
 		return ResponseProcessor.process("person",sr);
 	}
 
 	@PostMapping("/new")
 	@EnableAuthentication
 	public ResponseEntity create(@RequestBody PersonDto personDto) {
-		ServiceResult rs = service.getPeople();
+		ServiceResponse rs = service.getPeople();
 		return ResponseProcessor.process("all",rs);
 	}
 
@@ -51,11 +53,11 @@ public class TestController {
 	@EnableAuthentication
 	public LinkedHashMap<String, Object> test() {
 		LinkedHashMap<String, BaseDto> map = new LinkedHashMap<>();
-		final ServiceResult all = service.getPeople();
-		final ServiceResult one = service.getPersonById("");
-		final ServiceResult third = ServiceResult.withSuccess(
+		final ServiceResponse all = service.getPeople();
+		final ServiceResponse one = service.getPersonById("");
+		final ServiceResponse third = ServiceResponse.withSuccess(
 				TestDto.from("hello", 100));
-		final ServiceResult fourth = ServiceResult.withFailure("1000");
+		final ServiceResponse fourth = ServiceResponse.withFailure("1000");
 		return ResponseProcessor.process(
 				Pair.from("all", all),
 				Pair.from("one", one),

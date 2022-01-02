@@ -1,6 +1,6 @@
 package com.walmart.commons.validator;
 
-import com.walmart.commons.dto.FailureDto;
+import com.walmart.commons.dto.ErrorDto;
 
 import java.util.function.Supplier;
 
@@ -8,7 +8,7 @@ import java.util.function.Supplier;
 public interface Validator {
     ValidationResult validate(Object obj);
 
-    static ValidationResult ifTrue(Supplier<Boolean> condition, FailureDto failureDto) {
+    static ValidationResult ifTrue(Supplier<Boolean> condition, ErrorDto failureDto) {
         return condition.get()
                 ? ValidationResult.from(failureDto)
                 : ValidationResult.success();
@@ -17,12 +17,12 @@ public interface Validator {
 
     static ValidationResult ifTrue(Supplier<Boolean> condition, String errorCode) {
         return condition.get()
-                ? ValidationResult.from(FailureDto.from(errorCode))
+                ? ValidationResult.from(ErrorDto.from(errorCode))
                 : ValidationResult.success();
 
     }
 
-    static ValidationResult ifFalse(Supplier<Boolean> condition, FailureDto failureDto) {
+    static ValidationResult ifFalse(Supplier<Boolean> condition, ErrorDto failureDto) {
         return !condition.get()
                 ? ValidationResult.from(failureDto)
                 : ValidationResult.success();

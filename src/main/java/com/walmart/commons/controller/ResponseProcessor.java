@@ -1,8 +1,7 @@
 package com.walmart.commons.controller;
 
-import com.walmart.commons.dto.BaseDto;
-import com.walmart.commons.dto.FailureDto;
-import com.walmart.commons.service.ServiceResult;
+import com.walmart.commons.dto.ErrorDto;
+import com.walmart.commons.service.ServiceResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import java.util.Arrays;
@@ -10,7 +9,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
-* ResponseProcessor
+*  <p>
+ *      Utility class for processing ServiceResponse
+*  </p>
+ *
 */
 public final class ResponseProcessor {
 
@@ -37,20 +39,20 @@ public final class ResponseProcessor {
 			.body(SuccessResponse.instanceOf().add("", ""));
 	}
 
-	static public ResponseEntity serverError(FailureDto obj) {
+	static public ResponseEntity serverError(ErrorDto obj) {
 		return ResponseEntity
 			.status(HttpStatus.INTERNAL_SERVER_ERROR)
 			.body(obj);
 	}
 
-	static public ResponseEntity authenticationError(FailureDto obj) {
+	static public ResponseEntity authenticationError(ErrorDto obj) {
 		System.out.println("error object = " + obj);
 		return ResponseEntity
 				.status(HttpStatus.UNAUTHORIZED)
 				.body(obj);
 	}
 
-	static public ResponseEntity badRequest(FailureDto obj) {
+	static public ResponseEntity badRequest(ErrorDto obj) {
 		System.out.println("error object = " + obj);
 		return ResponseEntity
 				.status(HttpStatus.BAD_REQUEST)
@@ -60,10 +62,10 @@ public final class ResponseProcessor {
 	static public ResponseEntity badRequest(String errorCode, String optMessage) {
 		return ResponseEntity
 				.status(HttpStatus.BAD_REQUEST)
-				.body(FailureDto.from(errorCode, optMessage));
+				.body(ErrorDto.from(errorCode, optMessage));
 	}
 
-	static public ResponseEntity process(String key,final ServiceResult sr) {
+	static public ResponseEntity process(String key,final ServiceResponse sr) {
 
 		final ResponseEntity response;
 
@@ -71,17 +73,23 @@ public final class ResponseProcessor {
 
 			case SUCCESS_SINGLE:
 				Object dto = sr.getResultObj();
-				response = ResponseProcessor.ok(key,dto);
+				response = dto == null ? ResponseProcessor.noContent(dto)
+				: ResponseProcessor.ok(key, dto);
+
 				break;
 
 			case SUCCESS_MULTIPLE:
 				List<Object> listOfDto = (List<Object>) sr.getResultObj();
-				response = ResponseProcessor.ok(key,listOfDto);
+
+				response = listOfDto == null || listOfDto.isEmpty()
+						? ResponseProcessor.noContent(listOfDto)
+						: ResponseProcessor.ok(key, listOfDto);
+//				response = ResponseProcessor.ok(key,listOfDto);
 				break;
 
 			case FAILURE:
-				FailureDto failureDto = ((FailureDto)sr.getResultObj());
-				response = ResponseProcessor.serverError(failureDto);
+				ErrorDto failureDto = ((ErrorDto)sr.getResultObj());
+				response = ResponseProcessor.badRequest(failureDto);
 				break;
 
 			default:
@@ -104,6 +112,4 @@ public final class ResponseProcessor {
 
 		return result;
 	}
-
-
 }

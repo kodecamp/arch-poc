@@ -1,9 +1,9 @@
-package com.walmart.testusecase.service;
+package com.walmart.persondetails.service;
 
-import com.walmart.commons.dto.FailureDto;
-import com.walmart.commons.service.ServiceResult;
+import com.walmart.commons.dto.ErrorDto;
+import com.walmart.commons.service.ServiceResponse;
 import com.walmart.commons.validator.*;
-import com.walmart.testusecase.PersonDto;
+import com.walmart.persondetails.PersonDto;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,11 +18,11 @@ public class TestService {
     static private final Validator ageValidator2 = (baseDto) -> {
         System.out.println("-> AgeValidator 2");
         PersonDto person = (PersonDto) baseDto;
-        return Validator.ifTrue(() -> person.getAge() > 100, FailureDto.from("500"));
+        return Validator.ifTrue(() -> person.getAge() > 100, ErrorDto.from("500"));
     };
 
 
-    public ServiceResult getPersonById(String id) {
+    public ServiceResponse getPersonById(String id) {
         PersonDto person = PersonDto.from("100", "Sunil",37);
 
         String rs  = RuleSet
@@ -34,11 +34,11 @@ public class TestService {
                 .andThen(ageValidator2)
                 .validate(person);
 
-        return ServiceResult.processValidationResult(vr, person);
+        return ServiceResponse.processValidationResult(vr, person);
 
     }
 
-    public ServiceResult getAllPeople() {
+    public ServiceResponse getAllPeople() {
         PersonDto person = PersonDto.from("100", "Sunil",37);
 
         String rs  = RuleSet
@@ -50,7 +50,7 @@ public class TestService {
                 .andThen(ageValidator2)
                 .validate(person);
 
-        return ServiceResult.processValidationResult(vr, person);
+        return ServiceResponse.processValidationResult(vr, person);
 
     }
 
@@ -66,7 +66,7 @@ public class TestService {
                 () -> person.getName().toUpperCase());
     }
 
-    public ServiceResult savePerson(PersonDto pDto) {
+    public ServiceResponse savePerson(PersonDto pDto) {
         return null;
     }
 
@@ -78,7 +78,7 @@ public class TestService {
                 .andThen(ageValidator2)
                 .validate(person);
 
-        ServiceResult.processValidationResult(vr, person);
+        ServiceResponse.processValidationResult(vr, person);
     }
 
 }

@@ -1,8 +1,8 @@
 package com.walmart.commons.service;
 
 import com.walmart.commons.dto.BaseDto;
-import com.walmart.testusecase.PersonDto;
-import com.walmart.testusecase.service.TestService;
+import com.walmart.persondetails.PersonDto;
+import com.walmart.persondetails.service.TestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,12 +23,12 @@ public class PersonService {
     @Autowired
     TestService service;
 
-    public ServiceResult getPersonById(String id) {
+    public ServiceResponse getPersonById(String id) {
         System.out.println("------------------ getPersonById");
         var personDto = PersonDto.from("100","John", 37);
-        ServiceResult sr1= service.getPersonById("5");
-        ServiceResult sr2= service.getAllPeople();
-        return ServiceResult.withSuccess((BaseDto) personDto);
+        ServiceResponse sr1= service.getPersonById("5");
+        ServiceResponse sr2= service.getAllPeople();
+        return ServiceResponse.withSuccess((BaseDto) personDto);
 
     }
 
@@ -36,20 +36,20 @@ public class PersonService {
      *
      * @return <tt>List of <tt>PersonDto</tt></tt>
      */
-    public ServiceResult getPeople() {
+    public ServiceResponse getPeople() {
         System.out.println("------------------ getPeople");
         List<BaseDto> resultList = Arrays.asList(
                 PersonDto.from("100","John", 37),
                 PersonDto.from("101","Jacob", 38),
                 PersonDto.from("102","Sachin", 39));
-        return ServiceResult.withSuccess(resultList);
+        return ServiceResponse.withSuccess(resultList);
     }
 
-    public ServiceResult getPersonWithError(String name) {
-        return ServiceResult.withFailure("");
+    public ServiceResponse getPersonWithError(String name) {
+        return ServiceResponse.withFailure("");
     }
 
-    public ServiceResult getPeople(String name) {
+    public ServiceResponse getPeople(String name) {
         return null;
     }
 }

@@ -1,16 +1,16 @@
 package com.walmart.commons.validator;
 
-import com.walmart.commons.dto.FailureDto;
+import com.walmart.commons.dto.ErrorDto;
 
 import java.util.*;
 
 public class ValidationResult {
 
-    private final List<FailureDto> validationErrors = new ArrayList<>();
+    private final List<ErrorDto> validationErrors = new ArrayList<>();
     private final ValidationStatus status;
     private final List<Validator> validators = new ArrayList<>();
 
-    private ValidationResult(List<FailureDto> errors) {
+    private ValidationResult(List<ErrorDto> errors) {
         this.validationErrors.addAll(errors);
         this.status = ValidationStatus.VALIDATION_FAILURE;
     }
@@ -19,7 +19,7 @@ public class ValidationResult {
         this.status = ValidationStatus.VALIDATION_SUCCESS;
     }
 
-    private ValidationResult(FailureDto error) {
+    private ValidationResult(ErrorDto error) {
         this.validationErrors.add(error);
         this.status = ValidationStatus.VALIDATION_FAILURE;
     }
@@ -28,7 +28,7 @@ public class ValidationResult {
         this.status = status;
     }
 
-    static public ValidationResult from(FailureDto dto) {
+    static public ValidationResult from(ErrorDto dto) {
         return new ValidationResult(dto);
     }
 
@@ -36,15 +36,15 @@ public class ValidationResult {
         return new ValidationResult(ValidationStatus.VALIDATION_SUCCESS);
     }
 
-    static public ValidationResult from(List<FailureDto> listOfDto) {
+    static public ValidationResult from(List<ErrorDto> listOfDto) {
         return new ValidationResult(listOfDto);
     }
 
-    public final List<FailureDto> errors() {
+    public final List<ErrorDto> errors() {
         return Collections.unmodifiableList(validationErrors);
     }
 
-    public final Optional<FailureDto> error() {
+    public final Optional<ErrorDto> error() {
         return this.validationErrors.isEmpty()
                 ? Optional.empty()
                 : Optional.ofNullable(this.validationErrors.get(0));

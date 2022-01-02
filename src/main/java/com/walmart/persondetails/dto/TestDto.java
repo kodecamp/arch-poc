@@ -1,4 +1,4 @@
-package com.walmart.testusecase.dto;
+package com.walmart.persondetails.dto;
 
 import com.walmart.commons.dto.BaseDto;
 import lombok.AllArgsConstructor;
